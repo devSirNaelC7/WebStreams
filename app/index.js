@@ -7,16 +7,16 @@ async function consumeAPI(signal) {
     })
     const reader = response.body
         .pipeThrough(new TextDecoderStream())
-        .pipeThrough(parseNDJSON)
-        .pipeTo(new WritableStream({
-            write(chunk) {
-                console.log(++counter, 'chunk', chunk)
-            }
-        }))
+        .pipeThrough(parseNDJSON())
+        // .pipeTo(new WritableStream({
+        //     write(chunk) {
+        //         console.log(++counter, 'chunk', chunk)
+        //     }
+        // }))
     return reader
 }
 
-function appendHTML(element) {
+function appendToHTML(element) {
     return new WritableStream({
         write({ title, description, url_anime }) {
             const card = `
@@ -62,9 +62,9 @@ const [
 ] = ['start', 'stop', 'cards'].map(item => document.getElementById(item))
 
 let abortController = new AbortController()
-start.addEventListener('click', async() => {
+start.addEventListener('click', async () => {
     const readable = await consumeAPI(abortController.signal)
-    readable.pipeTo(appendHTML())
+    readable.pipeTo(appendToHTML(cards))
 })
 
 stop.addEventListener('click', () => {
